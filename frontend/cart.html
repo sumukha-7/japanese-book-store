@@ -1,33 +1,65 @@
-<html>
-<head>
-	<style>
-		table, th, td{
-			border: 1px solid black;
-		}
-	</style>
-</head>
-<body>
-	<table cellspacing="50" cellpadding="5">
-		<tr> <th>  Book Name </th>
-			<th> Price </th>
-			<th> Quantity </th>
-			<th> Amount </th>
-		</tr>
-		<tr> <td> Attack on Titan vol.1</td>
-			<td> ¥300 </td>
-			<td> 1 </td>
-			<td> ¥300</td>
-		</tr>
-		<tr> <td> Kimetsu no Yaiba vol.5</td>
-			<td> ¥260 </td>
-			<td> 2 </td>
-			<td> ¥520 </td>
-		</tr>
-		<tr> <td> Hunter X Hunter vol.33</td>
-			<td> ¥250 </td>
-			<td> 2 </td>
-			<td> ¥500 </td>
-		</tr>
-	</table>
-</body>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cart</title>
+    <style>
+      .cart-item {
+        display: flex;
+        align-items: center;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+
+      .cart-item img {
+        max-width: 200px;
+        height: auto;
+        margin-right: 10px;
+      }
+
+      .cart-details {
+        flex: 1;
+      }
+
+      .cart-details p {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Shopping Cart</h1>
+    <div id="cartItems"></div>
+
+    <script>
+      function displayCart() {
+        const cartItemsElement = document.getElementById("cartItems");
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        if (cart.length === 0) {
+          cartItemsElement.innerHTML = "<p>Your cart is empty</p>";
+        } else {
+          cartItemsElement.innerHTML = "";
+          cart.forEach((item) => {
+            const div = document.createElement("div");
+            div.classList.add("cart-item");
+            div.innerHTML = `
+              <img src="${item.image_link}" alt="${item.name}">
+              <div class="cart-details">
+                <p>Name: ${item.name}</p>
+                <p>Tags: ${item.tags}</p>
+                <p>Demographic: ${item.demographic}</p>
+                <p>Author: ${item.author}</p>
+                <p>Price: ${item.price}</p>
+              </div>
+            `;
+            cartItemsElement.appendChild(div);
+          });
+        }
+      }
+
+      displayCart();
+    </script>
+  </body>
 </html>

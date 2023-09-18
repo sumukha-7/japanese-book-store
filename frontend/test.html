@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+
+      #left-container {
+        flex: 1;
+        padding: 20px;
+      }
+
+      #right-container {
+        flex: 2;
+        padding: 20px;
+        border: 1px solid #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="left-container">
+      <h1>Hi</h1>
+      <button id="fetchButton">Fetch Data</button>
+    </div>
+    <div id="right-container">
+      <ul></ul>
+    </div>
+
+    <script>
+      document.getElementById("fetchButton").addEventListener("click", () => {
+        fetch("http://localhost:3000/api/manga/Action")
+          .then((res) => {
+            return res.json();
+          })
+          .then((data) => {
+            const ulElement = document.querySelector("ul");
+            ulElement.innerHTML = "";
+
+            data.forEach((manga) => {
+              const markup = `<div>
+                  <h2>${manga.name}</h2>
+                  <img src="${manga.image_link}" alt="${manga.name}">
+                </div>`;
+              ulElement.insertAdjacentHTML("beforeend", markup);
+            });
+          })
+          .catch((error) => console.log(error));
+      });
+    </script>
+  </body>
+</html>

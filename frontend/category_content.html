@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Category Content</title>
+    <style>
+      .manga-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+
+      .manga-item img {
+        max-width: 200px;
+        height: auto;
+        margin-right: 10px;
+      }
+
+      .manga-details {
+        flex: 1;
+      }
+
+      .manga-details p {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 id="categoryTitle"></h1>
+    <div id="mangaContainer"></div>
+
+    <script>
+      function getQueryParams(url) {
+        const params = {};
+        const urlSearchParams = new URLSearchParams(new URL(url).search);
+        for (const [key, value] of urlSearchParams) {
+          params[key] = value;
+        }
+        return params;
+      }
+
+      // Get the category from the URL
+      const queryParams = getQueryParams(window.location.href);
+      const category = queryParams.category;
+      const categoryTitleElement = document.getElementById("categoryTitle");
+      categoryTitleElement.textContent = `${category} Category`;
+
+      // Function to handle adding to cart
+      function addToCart(button) {
+        const manga = JSON.parse(button.dataset.manga);
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        cart.push(manga);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        alert(`Added ${manga.name} to cart!`);
+      }
+
+      // Fetch data for the selected category
+      fetch(`http://localhost:3000/api/manga/${category}`)
+        .then((res) => res.json())
+        .then((data) => {
+          const mangaContainer = document.getElementById("mangaContainer");
+          data.forEach((manga) => {
+            const div = document.createElement("div");
+            div.classList.add("manga-item");
+            div.innerHTML = `
+              <img src="${manga.image_link}" alt="${manga.name}">
+              <div class="manga-details">
+                <p>Name: ${manga.name}</p>
+                <p>Tags: ${manga.tags}</p>
+                <p>Demographic: ${manga.demographic}</p>
+                <p>Author: ${manga.author}</p>
+                <p>Price: ${manga.price}</p>
+                <button class="add-to-cart-button" data-manga='${JSON.stringify(
+                  manga
+                )}'>Add to Cart</button>
+
+
+              </div>
+            `;
+            mangaContainer.appendChild(div);
+          });
+        })
+        .catch((error) => console.error(error));
+      document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("add-to-cart-button")) {
+          addToCart(event.target);
+        }
+      });
+    </script>
+  </body>
+</html>
