@@ -29,9 +29,12 @@
       }
     </style>
   </head>
-  <body>
+  <body style="background-color: #ede7f6">
     <h1 id="categoryTitle"></h1>
-    <div id="mangaContainer"></div>
+    <div
+      id="mangaContainer"
+      style="background-color: #d1c4e9; border: 2px solid #000; margin: 1px"
+    ></div>
 
     <script>
       function getQueryParams(url) {
@@ -53,7 +56,17 @@
       function addToCart(button) {
         const manga = JSON.parse(button.dataset.manga);
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
-        cart.push(manga);
+
+        // Check if the manga is already in the cart
+        const existingManga = cart.find((item) => item.name === manga.name);
+
+        if (existingManga) {
+          existingManga.quantity++; // Increase quantity
+        } else {
+          manga.quantity = 1; // Initialize quantity to 1
+          cart.push(manga); // Add to cart
+        }
+
         localStorage.setItem("cart", JSON.stringify(cart));
         alert(`Added ${manga.name} to cart!`);
       }
@@ -69,11 +82,11 @@
             div.innerHTML = `
               <img src="${manga.image_link}" alt="${manga.name}">
               <div class="manga-details">
-                <p>Name: ${manga.name}</p>
-                <p>Tags: ${manga.tags}</p>
-                <p>Demographic: ${manga.demographic}</p>
-                <p>Author: ${manga.author}</p>
-                <p>Price: ${manga.price}</p>
+                <p><b>Name:</b> ${manga.name}</p>
+                <p><b>Tags:</b> ${manga.tags}</p>
+                <p><b>Demographic:</b> ${manga.demographic}</p>
+                <p><b>Author:</b> ${manga.author}</p>
+                <p><b>Price:</b> ${manga.price}</p>
                 <button class="add-to-cart-button" data-manga='${JSON.stringify(
                   manga
                 )}'>Add to Cart</button>

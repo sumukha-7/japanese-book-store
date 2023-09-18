@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cart</title>
     <style>
+      #total {
+        font-size: 1.2em;
+        color: #333;
+      }
       .cart-item {
         display: flex;
         align-items: center;
@@ -26,40 +30,103 @@
       .cart-details p {
         margin: 0;
       }
+
+      .quantity-controls button {
+        background-color: #f0f0f0;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+      }
     </style>
   </head>
-  <body>
+  <body style="background-color: #ede7f6">
     <h1>Shopping Cart</h1>
-    <div id="cartItems"></div>
+    <div
+      id="cartItems"
+      style="background-color: #d1c4e9; border: 2px solid #000; margin: 1px"
+    ></div>
 
     <script>
       function displayCart() {
         const cartItemsElement = document.getElementById("cartItems");
-        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
         if (cart.length === 0) {
           cartItemsElement.innerHTML = "<p>Your cart is empty</p>";
         } else {
           cartItemsElement.innerHTML = "";
-          cart.forEach((item) => {
+          cart.forEach((item, index) => {
             const div = document.createElement("div");
             div.classList.add("cart-item");
             div.innerHTML = `
-              <img src="${item.image_link}" alt="${item.name}">
-              <div class="cart-details">
-                <p>Name: ${item.name}</p>
-                <p>Tags: ${item.tags}</p>
-                <p>Demographic: ${item.demographic}</p>
-                <p>Author: ${item.author}</p>
-                <p>Price: ${item.price}</p>
-              </div>
-            `;
+                <img src="${item.image_link}" alt="${item.name}">
+                <div class="cart-details">
+                  <p><b>Name:</b> ${item.name}</p>
+                  <p><b>Tags:</b> ${item.tags}</p>
+                  <p><b>Demographic:</b> ${item.demographic}</p>
+                  <p><b>Author:</b> ${item.author}</p>
+                  <p><b>Price:</b> ${item.price}</p>
+                  <div class="quantity-controls">
+                    <button onclick="decrementQuantity(${index})">-</button>
+                    <span>Quantity: <b>${item.quantity}</b></span>
+                    <button onclick="incrementQuantity(${index})">+</button>
+                  </div>
+                </div>
+                <button onclick="removeFromCart(${index})">Remove</button>
+              `;
             cartItemsElement.appendChild(div);
           });
         }
       }
 
+      function removeFromCart(index) {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        cart.splice(index, 1);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        displayCart();
+      }
+
+      function incrementQuantity(index) {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        cart[index].quantity++;
+        localStorage.setItem("cart", JSON.stringify(cart));
+        displayCart();
+      }
+
+      function decrementQuantity(index) {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        if (cart[index].quantity > 1) {
+          cart[index].quantity--;
+        } else {
+          cart.splice(index, 1);
+        }
+        localStorage.setItem("cart", JSON.stringify(cart));
+        displayCart();
+      }
+
       displayCart();
+      document.addEventListener("DOMContentLoaded", function () {
+        function calculateTotal() {
+          let cart = JSON.parse(localStorage.getItem("cart")) || [];
+          let total = 0;
+          cart.forEach((item) => {
+            const price = Number(item.price.slice(1));
+            total += price * item.quantity;
+          });
+          return total;
+        }
+
+        function displayTotal() {
+          const totalElement = document.getElementById("total");
+          totalElement.textContent = `Total: ¥${calculateTotal().toFixed(2)}`;
+        }
+
+        displayTotal();
+      });
     </script>
+    <div
+      id="total"
+      style="text-align: center; font-weight: bold; margin-top: 20px"
+    ></div>
   </body>
 </html>
