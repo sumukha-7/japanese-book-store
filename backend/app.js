@@ -51,7 +51,7 @@ app.get("/api/manga/:category", async (req, res) => {
 app.get("/api/allBooks", async (req, res) => {
   try {
     const allBooks = await Manga.find();
-    res.render("allBooks", { books: allBooks });
+    res.json({ books: allBooks });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });

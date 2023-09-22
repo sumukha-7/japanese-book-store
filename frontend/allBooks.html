@@ -28,10 +28,19 @@
       .book-details p {
         margin: 0;
       }
+
+      #searchContainer {
+        margin-block: 5px;
+      }
     </style>
   </head>
   <body style="background-color: #ede7f6">
-    <h3>All available books</h3>
+    <h3 style="display: inline-block"></h3>
+    <div id="searchContainer" style="float: right">
+      <input type="text" id="searchInput" placeholder="Search..." />
+      <button onclick="searchBooks()">Search</button>
+    </div>
+
     <div
       id="bookList"
       style="background-color: #d1c4e9; border: 2px solid #000; margin: 1px"
@@ -77,9 +86,27 @@
         });
       }
 
+      function searchBooks() {
+        const searchInput = document.getElementById("searchInput").value;
+
+        const bookListContainer = document.getElementById("bookList");
+        bookListContainer.innerHTML = "";
+
+        fetch("http://localhost:3000/api/allBooks")
+          .then((res) => res.json())
+          .then((data) => {
+            const books = data.books;
+            const filteredBooks = books.filter((book) =>
+              new RegExp(searchInput, "i").test(book.name)
+            );
+            populateBookList(filteredBooks);
+          })
+          .catch((error) => console.error(error));
+      }
+
       fetch("http://localhost:3000/api/allBooks")
         .then((res) => res.json())
-        .then((data) => populateBookList(data))
+        .then((data) => populateBookList(data.books))
         .catch((error) => console.error(error));
 
       document.addEventListener("click", function (event) {
