@@ -1,0 +1,92 @@
+<!-- allBooks.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Books</title>
+    <style>
+      .book-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+
+      .book-item img {
+        max-width: 200px;
+        height: auto;
+        margin-right: 10px;
+      }
+
+      .book-details {
+        flex: 1;
+      }
+
+      .book-details p {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body style="background-color: #ede7f6">
+    <h3>All available books</h3>
+    <div
+      id="bookList"
+      style="background-color: #d1c4e9; border: 2px solid #000; margin: 1px"
+    ></div>
+
+    <script>
+      function addToCart(button) {
+        const book = JSON.parse(button.dataset.book);
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        const existingBook = cart.find((item) => item.name === book.name);
+
+        if (existingBook) {
+          existingBook.quantity++;
+        } else {
+          book.quantity = 1;
+          cart.push(book);
+        }
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        alert(`Added ${book.name} to cart!`);
+      }
+
+      function populateBookList(data) {
+        const bookListContainer = document.getElementById("bookList");
+        data.forEach((book) => {
+          const div = document.createElement("div");
+          div.classList.add("book-item");
+          div.innerHTML = `
+                    <img src="${book.image_link}" alt="${book.name}">
+                    <div class="book-details">
+                        <p><b>Name:</b> ${book.name}</p>
+                        <p><b>Tags:</b> ${book.tags}</p>
+                        <p><b>Demographic:</b> ${book.demographic}</p>
+                        <p><b>Author:</b> ${book.author}</p>
+                        <p><b>Price:</b> ${book.price}</p>
+                        <button class="add-to-cart-button" data-book='${JSON.stringify(
+                          book
+                        )}'>Add to Cart</button>
+                    </div>
+                `;
+          bookListContainer.appendChild(div);
+        });
+      }
+
+      fetch("http://localhost:3000/api/allBooks")
+        .then((res) => res.json())
+        .then((data) => populateBookList(data))
+        .catch((error) => console.error(error));
+
+      document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("add-to-cart-button")) {
+          addToCart(event.target);
+        }
+      });
+    </script>
+  </body>
+</html>

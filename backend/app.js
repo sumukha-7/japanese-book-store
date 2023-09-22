@@ -48,8 +48,18 @@ app.get("/api/manga/:category", async (req, res) => {
   }
 });
 
-app.get("*", (req, res) => {
-  res.send("Hello World!");
+app.get("/api/allBooks", async (req, res) => {
+  try {
+    const allBooks = await Manga.find();
+    res.render("allBooks", { books: allBooks });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/allBooks", (req, res) => {
+  res.sendFile(path.join(__dirname, "allBooks.html"));
 });
 
 const PORT = process.env.PORT || 3000;
